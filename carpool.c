@@ -59,9 +59,7 @@ LandmarkNode* findLandmark(LandmarkNode* root, char* landmark) {
     return cmp < 0 ? findLandmark(root->left, landmark) : findLandmark(root->right, landmark);
 }
 
-// ========== Driver/Passenger Registration ==========
 void registerDriver(int driverID, char *r, char *landmark) {
-    // Register in route BST
     RouteNode* routeNode = insertRoute(&routeroot, r);
     driver *newdriver = (driver *)malloc(sizeof(driver));
     newdriver->driverid = driverID;
@@ -69,7 +67,6 @@ void registerDriver(int driverID, char *r, char *landmark) {
     newdriver->next = routeNode->drivers;
     routeNode->drivers = newdriver;
     
-    // Register in landmark BST
     LandmarkNode* landmarkNode = insertLandmark(&landmarkroot, landmark);
     driver *newdriverLandmark = (driver *)malloc(sizeof(driver));
     newdriverLandmark->driverid = driverID;
@@ -81,7 +78,6 @@ void registerDriver(int driverID, char *r, char *landmark) {
 }
 
 void registerPassenger(int psngrid, char *r, char *landmark) {
-    // Register in route BST
     RouteNode* routeNode = insertRoute(&routeroot, r);
     passenger *newpassenger = (passenger *)malloc(sizeof(passenger));
     newpassenger->userid = psngrid;
@@ -89,7 +85,6 @@ void registerPassenger(int psngrid, char *r, char *landmark) {
     newpassenger->next = routeNode->passengers;
     routeNode->passengers = newpassenger;
     
-    // Register in landmark BST
     LandmarkNode* landmarkNode = insertLandmark(&landmarkroot, landmark);
     passenger *newpassengerLandmark = (passenger *)malloc(sizeof(passenger));
     newpassengerLandmark->userid = psngrid;
@@ -100,7 +95,6 @@ void registerPassenger(int psngrid, char *r, char *landmark) {
     printf("Passenger %d registered for route %s at landmark %s\n", psngrid, r, landmark);
 }
 
-// ========== Display Functions ==========
 void displayDrivers(driver *head) {
     if (!head) {
         printf("\n  (No drivers)");
@@ -178,7 +172,6 @@ void suggestAlternativePickupHelper(LandmarkNode* root, int passengerID, int *fo
     
     suggestAlternativePickupHelper(root->left, passengerID, found);
     
-    // Check if this passenger is registered at this landmark
     passenger* p = root->passengers;
     while (p) {
         if (p->userid == passengerID) {
@@ -211,4 +204,5 @@ void suggestAlternativePickup(int passengerID) {
     if (!found) {
         printf("\nPassenger %d not registered at any landmark.\n", passengerID);
     }
+
 }
