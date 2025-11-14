@@ -4,6 +4,7 @@
 #include "carpool.h"
 
 RouteNode* routeroot = NULL;
+LandmarkNode* landmarkroot = NULL;
 
 RouteNode* insertRoute(RouteNode** root, char* route) {
     if (*root == NULL) {
@@ -31,26 +32,75 @@ RouteNode* findRoute(RouteNode* root, char* route) {
     return cmp < 0 ? findRoute(root->left, route) : findRoute(root->right, route);
 }
 
-void registerDriver(int driverID, char *r) {
+
+LandmarkNode* insertLandmark(LandmarkNode** root, char* landmark) {
+    if (*root == NULL) {
+        LandmarkNode* newNode = (LandmarkNode*)malloc(sizeof(LandmarkNode));
+        strcpy(newNode->landmark, landmark);
+        newNode->drivers = NULL;
+        newNode->passengers = NULL;
+        newNode->left = newNode->right = NULL;
+        *root = newNode;
+        return newNode;
+    }
+    int cmp = strcmp(landmark, (*root)->landmark);
+    if (cmp == 0)
+        return *root;
+    else if (cmp < 0)
+        return insertLandmark(&((*root)->left), landmark);
+    else
+        return insertLandmark(&((*root)->right), landmark);
+}
+
+LandmarkNode* findLandmark(LandmarkNode* root, char* landmark) {
+    if (!root) return NULL;
+    int cmp = strcmp(landmark, root->landmark);
+    if (cmp == 0) return root;
+    return cmp < 0 ? findLandmark(root->left, landmark) : findLandmark(root->right, landmark);
+}
+
+// ========== Driver/Passenger Registration ==========
+void registerDriver(int driverID, char *r, char *landmark) {
+    // Register in route BST
     RouteNode* routeNode = insertRoute(&routeroot, r);
     driver *newdriver = (driver *)malloc(sizeof(driver));
     newdriver->driverid = driverID;
     strcpy(newdriver->route, r);
     newdriver->next = routeNode->drivers;
     routeNode->drivers = newdriver;
-    printf("Driver %d registered for route %s\n", driverID, r);
+    
+    // Register in landmark BST
+    LandmarkNode* landmarkNode = insertLandmark(&landmarkroot, landmark);
+    driver *newdriverLandmark = (driver *)malloc(sizeof(driver));
+    newdriverLandmark->driverid = driverID;
+    strcpy(newdriverLandmark->route, r);
+    newdriverLandmark->next = landmarkNode->drivers;
+    landmarkNode->drivers = newdriverLandmark;
+    
+    printf("Driver %d registered for route %s at landmark %s\n", driverID, r, landmark);
 }
 
-void registerPassenger(int psngrid, char *r) {
+void registerPassenger(int psngrid, char *r, char *landmark) {
+    // Register in route BST
     RouteNode* routeNode = insertRoute(&routeroot, r);
     passenger *newpassenger = (passenger *)malloc(sizeof(passenger));
     newpassenger->userid = psngrid;
     strcpy(newpassenger->route, r);
     newpassenger->next = routeNode->passengers;
     routeNode->passengers = newpassenger;
-    printf("  Passenger %d registered for route %s\n", psngrid, r);
+    
+    // Register in landmark BST
+    LandmarkNode* landmarkNode = insertLandmark(&landmarkroot, landmark);
+    passenger *newpassengerLandmark = (passenger *)malloc(sizeof(passenger));
+    newpassengerLandmark->userid = psngrid;
+    strcpy(newpassengerLandmark->route, r);
+    newpassengerLandmark->next = landmarkNode->passengers;
+    landmarkNode->passengers = newpassengerLandmark;
+    
+    printf("Passenger %d registered for route %s at landmark %s\n", psngrid, r, landmark);
 }
 
+// ========== Display Functions ==========
 void displayDrivers(driver *head) {
     if (!head) {
         printf("\n  (No drivers)");
@@ -84,6 +134,18 @@ void displayRoutes(RouteNode* root) {
     displayRoutes(root->right);
 }
 
+void displayLandmarks(LandmarkNode* root) {
+    if (!root) return;
+    displayLandmarks(root->left);
+    printf("\n\n  Landmark: %s", root->landmark);
+    printf("\n  Drivers:");
+    displayDrivers(root->drivers);
+    printf("\n  Passengers:");
+    displayPassengers(root->passengers);
+    displayLandmarks(root->right);
+}
+
+
 void matchRideHelper(RouteNode* root, int userID, int *found) {
     if (!root) return;
     matchRideHelper(root->left, userID, found);
@@ -108,4 +170,45 @@ void matchRide(int userID) {
     matchRideHelper(routeroot, userID, &found);
     if (!found)
         printf("\nPassenger %d not found.\n", userID);
+}
+
+
+void suggestAlternativePickupHelper(LandmarkNode* root, int passengerID, int *found) {
+    if (!root) return;
+    
+    suggestAlternativePickupHelper(root->left, passengerID, found);
+    
+    // Check if this passenger is registered at this landmark
+    passenger* p = root->passengers;
+    while (p) {
+        if (p->userid == passengerID) {
+            *found = 1;
+            printf("\n  Passenger %d found at landmark: %s\n", passengerID, root->landmark);
+            
+            if (root->drivers) {
+                printf("Available drivers at this landmark:\n");
+                driver* d = root->drivers;
+                while (d) {
+                    printf(" - Driver %d (route: %s)\n", d->driverid, d->route);
+                    d = d->next;
+                }
+            } else {
+                printf("No available drivers at landmark %s\n", root->landmark);
+            }
+            return;
+        }
+        p = p->next;
+    }
+    
+    suggestAlternativePickupHelper(root->right, passengerID, found);
+}
+
+void suggestAlternativePickup(int passengerID) {
+    printf("\n Suggesting Alternative Pickup Points for Passenger %d \n", passengerID);
+    int found = 0;
+    suggestAlternativePickupHelper(landmarkroot, passengerID, &found);
+    
+    if (!found) {
+        printf("\nPassenger %d not registered at any landmark.\n", passengerID);
+    }
 }
