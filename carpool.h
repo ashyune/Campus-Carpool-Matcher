@@ -4,21 +4,18 @@
 #define MAX_ROUTE_LEN 100
 #define MAX_LANDMARK_LEN 100
 
-// Driver structure
 typedef struct driver {
     int driverid;
     char route[MAX_ROUTE_LEN];
     struct driver *next;
 } driver;
 
-// Passenger structure
 typedef struct passenger {
     int userid;
     char route[MAX_ROUTE_LEN];
     struct passenger *next;
 } passenger;
 
-// Route BST Node
 typedef struct RouteNode {
     char route[MAX_ROUTE_LEN];
     driver *drivers;
@@ -27,7 +24,6 @@ typedef struct RouteNode {
     struct RouteNode *right;
 } RouteNode;
 
-// Landmark BST Node
 typedef struct LandmarkNode {
     char landmark[MAX_LANDMARK_LEN];
     driver *drivers;
@@ -36,11 +32,9 @@ typedef struct LandmarkNode {
     struct LandmarkNode *right;
 } LandmarkNode;
 
-// Global roots
 extern RouteNode* routeroot;
 extern LandmarkNode* landmarkroot;
 
-// Route and registration functions
 RouteNode* insertRoute(RouteNode** root, char* route);
 RouteNode* findRoute(RouteNode* root, char* route);
 void registerDriver(int driverID, char *r, char *landmark);
@@ -50,7 +44,6 @@ void displayPassengers(passenger *head);
 void displayRoutes(RouteNode* root);
 void matchRide(int userID);
 
-// Landmark functions
 LandmarkNode* insertLandmark(LandmarkNode** root, char* landmark);
 LandmarkNode* findLandmark(LandmarkNode* root, char* landmark);
 void displayLandmarks(LandmarkNode* root);
