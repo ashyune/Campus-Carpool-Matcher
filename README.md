@@ -18,8 +18,8 @@ A simple C-based console application that matches passengers with available driv
 - `carpool.h` — Structs + function declarations
 
 ## Compile and Run
-```gcc main.c carpool.c -o carpool
-./carpool```
+```gcc main.c carpool.c -o carpool```<br>
+```./carpool```
 
 
 ## Working
