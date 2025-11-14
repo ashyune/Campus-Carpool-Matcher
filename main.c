@@ -26,40 +26,38 @@ int main() {
     while (1) {
         displaymenu();
         scanf("%d", &choice);
-        getchar(); // Consume newline character
+        getchar();
         
         switch (choice) {
             case 1: {
-                // Register Driver
                 printf("\nEnter Driver ID: ");
                 scanf("%d", &id);
                 getchar();
                 
                 printf("Enter Route: ");
                 fgets(route, MAX_ROUTE_LEN, stdin);
-                route[strcspn(route, "\n")] = 0; // Remove newline
+                route[strcspn(route, "\n")] = 0; 
                 
                 printf("Enter Landmark: ");
                 fgets(landmark, MAX_LANDMARK_LEN, stdin);
-                landmark[strcspn(landmark, "\n")] = 0; // Remove newline
+                landmark[strcspn(landmark, "\n")] = 0; 
                 
                 registerDriver(id, route, landmark);
                 break;
             }
             
             case 2: {
-                // Register Passenger
                 printf("\nEnter Passenger ID: ");
                 scanf("%d", &id);
                 getchar();
                 
                 printf("Enter Route: ");
                 fgets(route, MAX_ROUTE_LEN, stdin);
-                route[strcspn(route, "\n")] = 0; // Remove newline
+                route[strcspn(route, "\n")] = 0; 
                 
                 printf("Enter Landmark: ");
                 fgets(landmark, MAX_LANDMARK_LEN, stdin);
-                landmark[strcspn(landmark, "\n")] = 0; // Remove newline
+                landmark[strcspn(landmark, "\n")] = 0;
                 
                 registerPassenger(id, route, landmark);
                 break;
@@ -74,13 +72,11 @@ int main() {
             }
             
             case 4: {
-                // Display All Landmarks
                 displayLandmarks(landmarkroot);
                 break;
             }
             
             case 5: {
-                // Match Ride by Route
                 printf("\nEnter Passenger ID to match: ");
                 scanf("%d", &id);
                 getchar();
@@ -90,7 +86,6 @@ int main() {
             }
             
             case 6: {
-                // Suggest Alternative Pickup Points
                 printf("\nEnter Passenger ID: ");
                 scanf("%d", &id);
                 getchar();
@@ -100,7 +95,6 @@ int main() {
             }
             
             case 7: {
-               
                 printf("\nThank you for using Carpool Management System!\n");
                 printf("Exiting\n\n");
                 exit(0);
@@ -116,4 +110,5 @@ int main() {
     }
     
     return 0;
+
 }
